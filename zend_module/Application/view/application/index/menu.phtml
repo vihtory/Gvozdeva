@@ -1,0 +1,185 @@
+<a> Вы вошли как <?php echo $name; ?></a><br/>
+<a> Mагазин <?php echo $store; ?></a>
+<div class="col-lg-8">
+    <div class="jumbotron">
+        <a>
+            <button id = "createOrderButton" class="btn-primary">Оформить заказ</button>
+        </a><br/>
+        <a id="updateQtyButton">Поступление товара</a>
+    </div>
+</div>
+<div id = "result_form"></div>
+<div id = "updateQtyDiv" class="overlay" style="display: none;">
+    <div class="login-wrapper">
+        <div class="login-content" id="addProduct">
+            <a id = "closeUpdateQty" class="close">x</a>
+            <h3>Поставка товара</h3>
+            <form method="post" id = "addProductForm" action="<?php echo $this->url('application', ['action' => 'add']); ?>">
+                <label for="sku">
+                    Артикул:
+                    <select name="id" id = "list" class="custom-select">
+                        <?php foreach ($products as $product): ?>
+                            <option type="text" value="<?php echo $product->getId()?>">
+                                <?php echo $product->getSku() . ' ' . $product->getName()?>
+                            </option>
+                        <?php endforeach;?>
+                    </select>
+                </label>
+                <label for="qty">
+                    Количество:
+                    <input type="text" name="qty" id="qty" required />
+                </label>
+                <button id = "btn" type="submit">Обновить</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id = "createOrderDiv" class="overlay" style="display: none;">
+    <div class="login-wrapper">
+        <div class="login-content" id="createOrder">
+            <a id = "closeCreateOrder" class="close">x</a>
+            <h3>Создание заказа</h3>
+            <form method="post" id = "createOrderForm" action="<?php echo $this->url('application', ['action' => 'order']); ?>">
+                <label for="name">
+                    Имя клиента:
+                    <input type="name" name="name" id="name"/>
+                </label>
+                <label for="phone">
+                    Телефон клиента:
+                    <input type="tel" name="phone" id="phone" pattern="7[0-9]{10}"/>
+                </label>
+                <label for="email">
+                    Email клиента:
+                    <input type="email" name="email" id="email"/>
+                </label>
+                <table style="max-width: 100%;" id = "orderProductList" class="table-light"></table>
+                <button id="addOrderProductWindow" type = "button" class="btn-light">Добавить продукт в заказ</button>
+                <button id = "orderBtn" type="submit">Создать</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id = "addOrderProductDiv" class="overlay" style="display: none;">
+    <div class="login-wrapper">
+        <div class="login-content" id="addProduct">
+            <a id = "closeOrderProduct" class="close">x</a>
+            <h3>Добавить товар</h3>
+            <form method="post" id = "addOrderProductForm" name = "addOrderProductForm" action="">
+                <label for="idOrdered">
+                    Артикул:
+                    <select name="idOrdered" id = "idOrdered" class="custom-select">
+                        <?php foreach ($products as $product): ?>
+                        <?php if ($product->getQty() > 0):?>
+                            <option type="text" value="<?php echo $product->getSku()?>">
+                                <?php echo $product->getSku() . ' ' . $product->getName()?>
+                            </option>
+                        <?php endif;?>
+                        <?php endforeach;?>
+                    </select>
+                </label>
+                <label for="qtyOrdered">
+                    Количество:
+                    <input type="text" name="qtyOrdered" id="qtyOrdered" required />
+                </label>
+                <button class = "close" id = "addOrderProductButton" type="submit" ">Добавить в заказ</button>
+            </form>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+    let productOrdered = [];
+    let qtyProductOrdered = 0;
+    function deleteRow (number) {
+        $('#tr_ordered' + number).remove();
+    }
+    $(document).ready(function() {
+
+        $("#updateQtyButton").click(function( event ){
+            event.preventDefault();
+            $("#updateQtyDiv").fadeToggle("fast");
+        });
+        $("#addOrderProductButton").click(function( event ){
+            event.preventDefault();
+            productOrdered.push({'id': document.getElementById("idOrdered").value, 'qty':document.getElementById("qtyOrdered").value});
+            let html = "<tr style=\"max-width: 100%;\" id=\"tr_ordered" + qtyProductOrdered +"\">" +
+                "<td><input style=\"max-width: 170px;\" name = \"sku_ordered[" + qtyProductOrdered + "]\" value=" + productOrdered[qtyProductOrdered]['id'] + " readonly></td>" +
+                "<td><input style=\"max-width: 170px;\" name = \"qty_ordered[" + qtyProductOrdered + "]\" value=" + productOrdered[qtyProductOrdered]['qty'] + "></td>" +
+                "<td><input  class=\"btn-light\" style=\"max-width: 170px;\" value='Удалить' type = \"button\" onclick=\"deleteRow(" + qtyProductOrdered + ")\"></td>" +
+                "</tr>";
+            document.getElementById("orderProductList").innerHTML+=html;
+            qtyProductOrdered++;
+            $("#addOrderProductDiv").fadeToggle("fast");
+        });
+        $("#createOrderButton").click(function( event ){
+            event.preventDefault();
+            $("#createOrderDiv").fadeToggle("fast");
+        });
+
+        $("#addOrderProductWindow").click(function( event ){
+            event.preventDefault();
+            $("#addOrderProductDiv").fadeToggle("fast");
+        });
+
+        $("#closeUpdateQty").click(function(){
+            $("#updateQtyDiv").fadeToggle("fast");
+        });
+
+        $("#closeCreateOrder").click(function(){
+            $("#createOrderDiv").fadeToggle("fast");
+        });
+        $("#closeOrderProduct").click(function(){
+            $("#addOrderProductDiv").fadeToggle("fast");
+        });
+
+        $("#btn").click( function() {
+                sendAjaxForm();
+                return false;
+            }
+        )
+        $("#orderBtn").click( function() {
+                sendOrderAjaxForm();
+                return false;
+            }
+        )
+        function sendOrderAjaxForm() {
+            $.ajax({
+                url:     "<?php echo $this->url('application', ['action' => 'order']); ?>",
+                type:     "POST",
+                dataType: "html",
+                data: $('#createOrderForm').serialize(),
+                success: function(response) {
+                    document.getElementById("result_form").innerText = 'Заказ создан';
+                    $("#createOrderDiv").fadeToggle("fast");
+                },
+                error: function(response) {
+                    document.getElementById("result_form").innerText = 'Произошла ошибка';
+                    $("#createOrderDiv").fadeToggle("fast");
+                }
+            });
+        }
+        function sendAjaxForm() {
+            $.ajax({
+                url:     "<?php echo $this->url('application', ['action' => 'add']); ?>",
+                type:     "POST",
+                dataType: "html",
+                data: $('#addProductForm').serialize(),
+                success: function(response) {
+                    document.getElementById("result_form").innerText = 'Поставка записана';
+                    $("#updateQtyDiv").fadeToggle("fast");
+                },
+                error: function(response) {
+                    document.getElementById("result_form").innerText = 'Произошла ошибка';
+                    $("#updateQtyDiv").fadeToggle("fast");
+                }
+            });
+
+        }
+    });
+</script>

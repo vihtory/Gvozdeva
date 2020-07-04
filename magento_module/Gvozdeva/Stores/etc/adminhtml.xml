@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<config>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <cms>
+                        <children>
+                            <stores translate="title" module="stores">
+                                <title>Stores</title>
+                                <sort_order>15</sort_order>
+                            </stores>
+                        </children>
+                    </cms>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+    <menu>
+        <cms>
+            <children>
+                <stores translate="title" module="stores">
+                    <title>Stores</title>
+                    <sort_order>15</sort_order>
+                    <action>adminhtml/stores</action>
+                </stores>
+            </children>
+        </cms>
+    </menu>
+</config>

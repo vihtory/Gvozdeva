@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<config>
+    <sections>
+        <general>
+            <groups>
+                <store_setting translate="label">
+                    <label>Stores</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>320</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <qty_stores translate="label comment">
+                            <label>Stores on page</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </qty_stores>
+                        <store_url translate="label comment">
+                            <label>Store Application Url</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </store_url>
+                    </fields>
+                </store_setting>
+            </groups>
+        </general>
+    </sections>
+</config>
